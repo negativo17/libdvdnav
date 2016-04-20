@@ -1,0 +1,30 @@
+From e225924870be20b03aa5e05b8bd1f524499fe722 Mon Sep 17 00:00:00 2001
+From: Jean-Baptiste Kempf <jb@videolan.org>
+Date: Sun, 31 Aug 2014 19:51:04 +0200
+Subject: [PATCH 3/5] dvdnav_get_position: Fix mutex unlocking in case of error
+
+---
+ src/searching.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/searching.c b/src/searching.c
+index 74a16ee..93c7c2c 100644
+--- a/src/searching.c
++++ b/src/searching.c
+@@ -563,11 +563,11 @@ dvdnav_status_t dvdnav_get_position(dvdnav_t *this, uint32_t *pos,
+     *len += cell->last_sector - cell->first_sector + 1;
+   }
+ 
++  pthread_mutex_unlock(&this->vm_lock);
++
+   if((signed)*pos == -1)
+     return DVDNAV_STATUS_ERR;
+ 
+-  pthread_mutex_unlock(&this->vm_lock);
+-
+   return DVDNAV_STATUS_OK;
+ }
+ 
+-- 
+1.9.3
+

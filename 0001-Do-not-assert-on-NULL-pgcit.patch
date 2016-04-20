@@ -1,0 +1,28 @@
+From b026ed3da85b2085678a8d9e643e85e072ae6f83 Mon Sep 17 00:00:00 2001
+From: Jean-Baptiste Kempf <jb@videolan.org>
+Date: Sun, 31 Aug 2014 00:40:47 +0200
+Subject: [PATCH 1/5] Do not assert on NULL pgcit
+
+---
+ src/vm/getset.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/vm/getset.c b/src/vm/getset.c
+index 12b24ec..cd0c074 100644
+--- a/src/vm/getset.c
++++ b/src/vm/getset.c
+@@ -242,7 +242,10 @@ int get_ID(vm_t *vm, int id) {
+ 
+   /* Relies on state to get the correct pgcit. */
+   pgcit = get_PGCIT(vm);
+-  assert(pgcit != NULL);
++  if(pgcit == NULL) {
++    fprintf(MSG_OUT, "libdvdnav: PGCIT null!\n");
++    return 0;
++  }
+ #ifdef TRACE
+   fprintf(MSG_OUT, "libdvdnav: ** Searching for menu (0x%x) entry PGC\n", id);
+ #endif
+-- 
+1.9.3
+

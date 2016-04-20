@@ -1,0 +1,28 @@
+From 2d73a2b3c6ccd3d45be194d482cfb09f8e5055e2 Mon Sep 17 00:00:00 2001
+From: Jean-Baptiste Kempf <jb@videolan.org>
+Date: Sun, 31 Aug 2014 00:51:40 +0200
+Subject: [PATCH 2/5] Return an error in dvdnav_get_position instead of
+ asserting
+
+LP: #1236939
+---
+ src/searching.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/searching.c b/src/searching.c
+index f6e497e..74a16ee 100644
+--- a/src/searching.c
++++ b/src/searching.c
+@@ -563,7 +563,8 @@ dvdnav_status_t dvdnav_get_position(dvdnav_t *this, uint32_t *pos,
+     *len += cell->last_sector - cell->first_sector + 1;
+   }
+ 
+-  assert((signed)*pos != -1);
++  if((signed)*pos == -1)
++    return DVDNAV_STATUS_ERR;
+ 
+   pthread_mutex_unlock(&this->vm_lock);
+ 
+-- 
+1.9.3
+
