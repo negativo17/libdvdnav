@@ -1,15 +1,12 @@
 Name:           libdvdnav
 Version:        6.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A library for reading DVD video discs based on Ogle code
 License:        GPLv2+
 URL:            http://dvdnav.mplayerhq.hu/
 Source0:        https://download.videolan.org/pub/videolan/libdvdnav/%{version}/libdvdnav-%{version}.tar.bz2
-Source1:        https://download.videolan.org/pub/videolan/libdvdnav/%{version}/libdvdnav-%{version}.tar.bz2.asc
-Source2:        https://download.videolan.org/pub/keys/7180713BE58D1ADC.asc
 BuildRequires:  doxygen
 BuildRequires:  gcc
-BuildRequires:  gnupg2
 BuildRequires:  libdvdread-devel >= 5.0.2
 
 %description
@@ -27,8 +24,6 @@ libdvdnav-devel contains the files necessary to build packages that use the
 libdvdnav library.
 
 %prep
-gpg2 --import --import-options import-export,import-minimal %{S:2} > ./gpg-keyring.gpg
-gpgv2 --keyring ./gpg-keyring.gpg %{S:1} %{S:0}
 %setup -q
 
 %build
@@ -58,6 +53,9 @@ rm %{buildroot}%{_pkgdocdir}/{COPYING,TODO}
 %{_libdir}/pkgconfig/dvdnav.pc
 
 %changelog
+* Thu Aug 30 2018 Simone Caronni <negativo17@gmail.com> - 6.0.0-2
+- Do not verify signatures (commands not supported by RHEL 7 gpg2).
+
 * Mon Jul 23 2018 Dominik Mierzejewski <rpm@greysector.net> 6.0.0-1
 - update to 6.0.0
 - add BR: gcc for https://fedoraproject.org/wiki/Changes/Remove_GCC_from_BuildRoot
