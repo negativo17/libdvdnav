@@ -1,18 +1,20 @@
 Name:           libdvdnav
-Version:        5.0.3
-Release:        3%{?dist}
+Version:        6.0.0
+Release:        1%{?dist}
 Summary:        A library for reading DVD video discs based on Ogle code
 License:        GPLv2+
 URL:            http://dvdnav.mplayerhq.hu/
-
-Source0:        https://download.videolan.org/pub/videolan/%{name}/%{version}/%{name}-%{version}.tar.bz2
-
+Source0:        https://download.videolan.org/pub/videolan/libdvdnav/%{version}/libdvdnav-%{version}.tar.bz2
+Source1:        https://download.videolan.org/pub/videolan/libdvdnav/%{version}/libdvdnav-%{version}.tar.bz2.asc
+Source2:        https://download.videolan.org/pub/keys/7180713BE58D1ADC.asc
 BuildRequires:  doxygen
+BuildRequires:  gcc
+BuildRequires:  gnupg2
 BuildRequires:  libdvdread-devel >= 5.0.2
 
 %description
-%{name} provides a simple library for reading DVD video discs. The code is
-based on Ogle and used in, among others, the Xine dvdnav plug-in.
+libdvdnav provides a simple library for reading DVD video discs.
+The code is based on Ogle and used in, among others, the Xine dvdnav plug-in.
 
 %package        devel
 Summary:        Development files for libdvdnav
@@ -21,45 +23,70 @@ Requires:       libdvdread-devel >= 5.0.2
 Requires:       pkgconfig
 
 %description    devel
-%{name}-devel contains the files necessary to build packages that use the
-%{name} library.
+libdvdnav-devel contains the files necessary to build packages that use the
+libdvdnav library.
 
 %prep
+gpg2 --import --import-options import-export,import-minimal %{S:2} > ./gpg-keyring.gpg
+gpgv2 --keyring ./gpg-keyring.gpg %{S:1} %{S:0}
 %setup -q
 
 %build
 %configure --disable-static
 
-make %{?_smp_mflags}
+%{__make} V=1 %{?_smp_mflags}
 pushd doc
 doxygen doxy.conf
 popd
 
 %install
 %make_install
-rm -fr %{buildroot}%{_docdir}/%{name}
-find %{buildroot} -name "*.la" -delete
+rm %{buildroot}%{_libdir}/libdvdnav.la
+rm %{buildroot}%{_pkgdocdir}/{COPYING,TODO}
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
-%{!?_licensedir:%global license %%doc}
 %license COPYING
 %doc AUTHORS ChangeLog README
-%{_libdir}/%{name}.so.*
+%{_libdir}/libdvdnav.so.*
 
 %files devel
-%doc doc/html/*
-%{_libdir}/%{name}.so
+%doc TODO doc/html/*
+%{_libdir}/libdvdnav.so
 %{_includedir}/dvdnav
 %{_libdir}/pkgconfig/dvdnav.pc
 
 %changelog
-* Wed Dec 30 2015 Simone Caronni <negativo17@gmail.com> - 5.0.3-3
-- Make the package build also on RHEL/CentOS 7.
-- Add license macro.
+* Mon Jul 23 2018 Dominik Mierzejewski <rpm@greysector.net> 6.0.0-1
+- update to 6.0.0
+- add BR: gcc for https://fedoraproject.org/wiki/Changes/Remove_GCC_from_BuildRoot
+- verify tarball GPG signature
+- use modern macros
+- show gcc command line in make output
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Wed Feb 17 2016 Dominik Mierzejewski <rpm[AT]greysector.net> 5.0.3-4
+- fix FTBFS due to doc files in the wrong place (#1307717)
+- use license macro
+- drop unnecessary defattr declarations
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.0.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
