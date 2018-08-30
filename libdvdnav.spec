@@ -37,7 +37,7 @@ popd
 %install
 %make_install
 rm %{buildroot}%{_libdir}/libdvdnav.la
-rm %{buildroot}%{_pkgdocdir}/{COPYING,TODO}
+rm -fr %{buildroot}%{_docdir}/%{name}
 
 %ldconfig_scriptlets
 
@@ -55,6 +55,7 @@ rm %{buildroot}%{_pkgdocdir}/{COPYING,TODO}
 %changelog
 * Thu Aug 30 2018 Simone Caronni <negativo17@gmail.com> - 6.0.0-2
 - Do not verify signatures (commands not supported by RHEL 7 gpg2).
+- Let RPM pick up docs.
 
 * Mon Jul 23 2018 Dominik Mierzejewski <rpm@greysector.net> 6.0.0-1
 - update to 6.0.0
