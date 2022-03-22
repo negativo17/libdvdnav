@@ -1,22 +1,23 @@
 Name:           libdvdnav
-Version:        6.0.0
-Release:        2%{?dist}
+Version:        6.0.1
+Release:        1%{?dist}
 Summary:        A library for reading DVD video discs based on Ogle code
 License:        GPLv2+
-URL:            http://dvdnav.mplayerhq.hu/
+URL:            https://www.videolan.org/developers/libdvdnav.html
+
 Source0:        https://download.videolan.org/pub/videolan/libdvdnav/%{version}/libdvdnav-%{version}.tar.bz2
-BuildRequires:  doxygen
+
 BuildRequires:  gcc
-BuildRequires:  libdvdread-devel >= 5.0.2
+BuildRequires:  libdvdread-devel >= 6.0.0
 
 %description
 libdvdnav provides a simple library for reading DVD video discs.
 The code is based on Ogle and used in, among others, the Xine dvdnav plug-in.
 
 %package        devel
-Summary:        Development files for libdvdnav
-Requires:       %{name} = %{version}-%{release}
-Requires:       libdvdread-devel >= 5.0.2
+Summary:        Development files for %{name}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       libdvdread-devel >= 6.0.0
 Requires:       pkgconfig
 
 %description    devel
@@ -24,45 +25,35 @@ libdvdnav-devel contains the files necessary to build packages that use the
 libdvdnav library.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure --disable-static
-
-%{__make} V=1 %{?_smp_mflags}
-pushd doc
-doxygen doxy.conf
-popd
+%make_build
 
 %install
 %make_install
-rm %{buildroot}%{_libdir}/libdvdnav.la
-rm -fr %{buildroot}%{_docdir}/%{name}
+rm -fr %{buildroot}%{_libdir}/libdvdnav.la %{buildroot}%{_pkgdocdir}
 
-%ldconfig_scriptlets
+%{?ldconfig_scriptlets}
 
 %files
 %license COPYING
 %doc AUTHORS ChangeLog README
-%{_libdir}/libdvdnav.so.*
+%{_libdir}/libdvdnav.so.4
+%{_libdir}/libdvdnav.so.4.2.0
 
 %files devel
-%doc TODO doc/html/*
+%doc TODO
 %{_libdir}/libdvdnav.so
 %{_includedir}/dvdnav
 %{_libdir}/pkgconfig/dvdnav.pc
 
 %changelog
-* Thu Aug 30 2018 Simone Caronni <negativo17@gmail.com> - 6.0.0-2
-- Do not verify signatures (commands not supported by RHEL 7 gpg2).
-- Let RPM pick up docs.
-
-* Mon Jul 23 2018 Dominik Mierzejewski <rpm@greysector.net> 6.0.0-1
-- update to 6.0.0
-- add BR: gcc for https://fedoraproject.org/wiki/Changes/Remove_GCC_from_BuildRoot
-- verify tarball GPG signature
-- use modern macros
-- show gcc command line in make output
+* Tue Mar 22 2022 Simone Caronni <negativo17@gmail.com> - 6.0.1-1
+- Update to 6.0.1.
+- Clean up SPEC file.
+- Drop docs.
 
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.3-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
